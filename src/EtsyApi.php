@@ -7,8 +7,8 @@ use Gentor\Etsy\Exceptions\EtsyRequestException;
 use Gentor\Etsy\Exceptions\EtsyResponseException;
 use Gentor\Etsy\Helpers\RequestValidator;
 use Gentor\OAuth1Etsy\Client\Server\Etsy;
-use League\OAuth1\Client\Credentials\TokenCredentials;
 use GuzzleHttp\Exception\BadResponseException;
+use League\OAuth1\Client\Credentials\TokenCredentials;
 
 /**
  * Class EtsyApi
@@ -66,6 +66,8 @@ use GuzzleHttp\Exception\BadResponseException;
  * @method array uploadListingImage(array $argument = [])
  * @method array getImage_Listing(array $argument = [])
  * @method array deleteListingImage(array $argument = [])
+ * @method array getVariationImages(array $argument = [])
+ * @method array updateVariationImages(array $argument = [])
  * @method array getInventory(array $argument = [])
  * @method array updateInventory(array $argument = [])
  * @method array getProduct(array $argument = [])
