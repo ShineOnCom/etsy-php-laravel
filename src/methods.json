@@ -737,6 +737,31 @@
         "visibility": "private",
         "http_method": "DELETE"
     },
+    "getVariationImages": {
+        "name": "getVariationImages",
+        "description": "Gets all variation images on a listing",
+        "uri": "/listings/:listing_id/variation-images",
+        "params": {
+            "listing_id": "int"
+        },
+        "defaults": null,
+        "type": "array(variation_image)",
+        "visibility": "public",
+        "http_method": "GET"
+    },
+    "updateVariationImages": {
+        "name": "updateVariationImages",
+        "description": "Creates variation images on a listing",
+        "uri": "/listings/:listing_id/variation-images",
+        "params": {
+            "listing_id": "int",
+            "variation_images": "array(variation_image)"
+        },
+        "defaults": null,
+        "type": "array(variation_image)",
+        "visibility": "private",
+        "http_method": "POST"
+    },
     "getInventory": {
         "name": "getInventory",
         "description": "Get the inventory for a listing [developer preview - may be unstable]",
