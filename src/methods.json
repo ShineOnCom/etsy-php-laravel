@@ -745,7 +745,7 @@
             "listing_id": "int"
         },
         "defaults": null,
-        "type": "array(variation_image)",
+        "type": "ListingVariationImage",
         "visibility": "public",
         "http_method": "GET"
     },
@@ -755,10 +755,10 @@
         "uri": "/listings/:listing_id/variation-images",
         "params": {
             "listing_id": "int",
-            "variation_images": "array(variation_image)"
+            "variation_images": "stringJSON"
         },
         "defaults": null,
-        "type": "array(variation_image)",
+        "type": "ListingVariationImage",
         "visibility": "private",
         "http_method": "POST"
     },
