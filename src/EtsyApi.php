@@ -8,7 +8,10 @@ use Gentor\Etsy\Exceptions\EtsyResponseException;
 use Gentor\Etsy\Helpers\RequestValidator;
 use Gentor\OAuth1Etsy\Client\Server\Etsy;
 use GuzzleHttp\Exception\BadResponseException;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 use League\OAuth1\Client\Credentials\TokenCredentials;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class EtsyApi
@@ -286,6 +289,8 @@ class EtsyApi
     private $tokenCredentials;
     /** @var \GuzzleHttp\Client $client */
     private $client;
+    /** @var int $attempt */
+    private $attempt = 1;
 
     /**
      * EtsyApi constructor.
@@ -332,26 +337,16 @@ class EtsyApi
             $uri .= "?" . http_build_query($params);
         }
 
-        return $this->handleError($this->sendRequest($method['http_method'], $uri, $data));
-    }
+        $data = @$this->prepareData($args['data']);
 
-    /**
-     * @param $method
-     * @param $path
-     * @param array $params
-     * @return array
-     * @throws \Exception
-     */
-    protected function sendRequest($method, $path, $params = [])
-    {
-        $url = $this->getEndpointUrl($path);
+        $url = $this->getEndpointUrl($uri);
 
-        if ($file = $this->prepareFile($params)) {
-            $params = [];
+        if ($file = $this->prepareFile($data)) {
+            $data = [];
         }
 
         if ($this->tokenCredentials) {
-            $headers = $this->server->getHeaders($this->tokenCredentials, $method, $url, $params);
+            $headers = $this->server->getHeaders($this->tokenCredentials, $method, $url, $data);
             $options = [
                 'headers' => $headers,
             ];
@@ -365,16 +360,43 @@ class EtsyApi
             if ($file) {
                 $options['multipart'] = $file;
             } else {
-                $options['form_params'] = $params;
+                $options['form_params'] = $data;
             }
         }
 
+        return $this->handleError($this->sendRequest($method, $url, $options));
+    }
+
+    /**
+     * @param string $method
+     * @param string $url
+     * @param array $options
+     * @return array
+     * @throws \Gentor\Etsy\Exceptions\EtsyResponseException
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    protected function sendRequest(string $method, string $url, array $options = []): array
+    {
         try {
+            $this->logApiRequest($method, $url, $options);
+
             $response = $this->client->request($method, $url, $options);
+
+            $this->logApiResponse($response);
         } catch (BadResponseException $e) {
             $response = $e->getResponse();
             $body = $response->getBody();
             $statusCode = $response->getStatusCode();
+
+            // Handle Rate Limiting
+            Log::debug(__METHOD__, $response->getHeaders()); //temp
+            if ($response->getHeader('X-RateLimit-Remaining') < 1) {
+                if ($this->attempt < Config::get('etsy.options.rate_limit.max_attempts')) {
+                    $this->attempt++;
+                    usleep(Config::get('etsy.options.rate_limit.delay_in_seconds') * 1000 * 1000);
+                    return $this->sendRequest($method, $url, $options);
+                }
+            }
 
             throw new EtsyResponseException("Received error [$body] with status code [$statusCode]", $response);
         }
@@ -526,6 +548,31 @@ class EtsyApi
         }
 
         return $association;
+    }
+
+    /**
+     * @param string $method
+     * @param string $url
+     * @param array $options
+     */
+    protected function logApiRequest(string $method, string $url, array $options)
+    {
+        if (Config::get('etsy.options.log.api_request')) {
+            Log::info('ETSY API Request', compact('method', 'url') + $options);
+        }
+    }
+
+    /**
+     * @param \Psr\Http\Message\ResponseInterface $response
+     */
+    protected function logApiResponse(ResponseInterface $response)
+    {
+        if (Config::get('etsy.options.log.api_response')) {
+            Log::info('ETSY API Response', [
+                'status_code' => $response->getStatusCode(),
+                'body'        => json_decode((string)$response->getBody(), true),
+            ]);
+        }
     }
 
     /**
