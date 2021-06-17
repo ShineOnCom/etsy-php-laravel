@@ -3,7 +3,6 @@
 namespace Gentor\Etsy\Providers;
 
 use Gentor\Etsy\EtsyService;
-use Illuminate\Session\SessionManager;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -19,6 +18,14 @@ class EtsyServiceProvider extends ServiceProvider
      */
     protected $defer = true;
 
+    public function boot()
+    {
+        if ($this->app->runningInConsole()) {
+            $this->publishes([
+                __DIR__.'/../../config/etsy.php' => config_path('etsy.php'),
+            ], 'config');
+        }
+    }
     /**
      * Register the application services.
      *
@@ -29,6 +36,8 @@ class EtsyServiceProvider extends ServiceProvider
         $this->app->bind('etsy', function ($app) {
             return new EtsyService($app['session'], $app['config']['etsy']);
         });
+
+        $this->mergeConfigFrom(__DIR__.'/../../config/etsy.php', 'etsy');
     }
 
     /**
