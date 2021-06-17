@@ -319,7 +319,6 @@ class EtsyApi
         $method = $this->methods[$arguments['method']];
         $args = $arguments['args'];
         $params = $this->prepareParameters($args['params']);
-        $data = @$this->prepareData($args['data']);
 
         $uri = preg_replace_callback('@:(.+?)(\/|$)@', function ($matches) use ($args) {
             return $args["params"][$matches[1]] . $matches[2];
@@ -340,6 +339,8 @@ class EtsyApi
         $data = @$this->prepareData($args['data']);
 
         $url = $this->getEndpointUrl($uri);
+
+        $method = $method['http_method'];
 
         if ($file = $this->prepareFile($data)) {
             $data = [];
