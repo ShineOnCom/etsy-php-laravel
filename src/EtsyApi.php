@@ -559,8 +559,7 @@ class EtsyApi
     protected function logApiRequest(string $method, string $url, array $options)
     {
         if (Config::get('etsy.options.log.api_request')) {
-            // remove oauth details
-            unset($options['headers']);
+            unset($options['headers']); // remove oauth details
 
             Log::info('ETSY API Request', compact('method', 'url') + $options);
         }
