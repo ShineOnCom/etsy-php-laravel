@@ -8,6 +8,7 @@ use Gentor\Etsy\Exceptions\EtsyResponseException;
 use Gentor\Etsy\Helpers\RequestValidator;
 use Gentor\OAuth1Etsy\Client\Server\Etsy;
 use GuzzleHttp\Exception\BadResponseException;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use League\OAuth1\Client\Credentials\TokenCredentials;
@@ -610,16 +611,17 @@ class EtsyApi
                 throw new EtsyRequestException('Invalid params for method "' . $method . '": ' . implode(', ', $validArguments['_invalid']) . ' - ' . json_encode($this->methods[$method]));
             }
 
-            return call_user_func_array(array($this, 'request'), array(
-                array(
+            return call_user_func_array([$this, 'request'], [
+                [
                     'method' => $method,
-                    'args' => array(
+                    'args' => [
                         'data' => @$validArguments['_valid'],
                         'params' => @$args[0]['params'],
-                        'associations' => @$args[0]['associations'],
-                        'fields' => @$args[0]['fields']
-                    )
-                )));
+                        'associations' => Arr::get($args, '0.associations', []),
+                        'fields' => Arr::get($args, '0.fields', []),
+                    ]
+                ]
+            ]);
         } else {
             throw new EtsyRequestException('Method "' . $method . '" not exists');
         }
