@@ -399,7 +399,7 @@ class EtsyApi
                 }
             }
 
-            throw new EtsyResponseException("Received error [$body] with status code [$statusCode]", $response);
+            throw new EtsyResponseException("Received error [$body] with status code [$statusCode]", $response, $statusCode, $e);
         }
 
         return json_decode((string)$response->getBody(), true);

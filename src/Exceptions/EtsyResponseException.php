@@ -3,6 +3,8 @@
 namespace Gentor\Etsy\Exceptions;
 
 
+use Throwable;
+
 /**
  * Class EtsyResponseException
  * @package Gentor\Etsy\Exceptions
@@ -19,11 +21,13 @@ class EtsyResponseException extends \Exception
      * @param string $message
      * @param mixed $response
      */
-    function __construct($message, $response = [])
+    function __construct($message, $response = [], $code = 0, Throwable $previous = null)
     {
         $this->response = $response;
 
-        parent::__construct($message);
+        $this->code = $code;
+
+        parent::__construct($message, $code, $previous);
     }
 
     /**
