@@ -13,6 +13,7 @@ return [
             'api_response' => env('ETSY_API_OPTIONS_LOG_API_RESPONSE', 0),
         ],
         'rate_limit' => [
+            'threshold' => env('ETSY_API_OPTIONS_RATE_LIMIT_THRESHOLD', 100),
             'max_attempts' => env('ETSY_API_OPTIONS_RATE_LIMIT_MAX_ATTEMPTS', 3),
             'delay_in_seconds' => env('ETSY_API_OPTIONS_RATE_LIMIT_DELAY_IN_SECONDS', 3),
         ]
