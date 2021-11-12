@@ -391,8 +391,7 @@ class EtsyApi
             $statusCode = $response->getStatusCode();
 
             // Handle Rate Limiting
-            Log::debug(__METHOD__, $response->getHeaders()); //temp
-            if ($response->getHeader('X-RateLimit-Remaining') < 1) {
+            if ($response->getHeader('X-RateLimit-Remaining') < Config::get('etsy.options.rate_limit.threshold')) {
                 if ($this->attempt < Config::get('etsy.options.rate_limit.max_attempts')) {
                     $this->attempt++;
                     usleep(Config::get('etsy.options.rate_limit.delay_in_seconds') * 1000 * 1000);
