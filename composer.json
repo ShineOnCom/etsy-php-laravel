@@ -16,8 +16,14 @@
             "email": "diogogomeswww@gmail.com"
         }
     ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/ShineOnCom/oauth1-etsy"
+        }
+    ],
     "require": {
-        "gentor/oauth1-etsy": "^1.0.4",
+        "gentor/oauth1-etsy": "dev-master",
         "illuminate/session": "^6|^7|^8",
         "illuminate/config": "^6|^7|^8",
         "illuminate/log": "^6|^7|^8",
