@@ -24,9 +24,9 @@
     ],
     "require": {
         "gentor/oauth1-etsy": "dev-master",
-        "illuminate/session": "^6|^7|^8",
-        "illuminate/config": "^6|^7|^8",
-        "illuminate/log": "^6|^7|^8",
+        "illuminate/session": "^6|^7|^8|^9",
+        "illuminate/config": "^6|^7|^8|^9",
+        "illuminate/log": "^6|^7|^8|^9",
         "ext-json": "*"
     },
     "autoload": {
